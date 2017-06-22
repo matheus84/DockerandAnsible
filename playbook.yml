@@ -1,0 +1,29 @@
+---
+- hosts: 127.0.0.1
+  remote_user: matheus
+  become: yes
+  tasks:
+
+      - name: Instalar python-pip
+        apt: name=python-pip state=latest update_cache=yes
+
+      - name: Instalar package docker-py
+        raw: "pip install docker-py"
+
+      - name: "Executa o container MARIADB"
+        docker_container:
+          name: banco
+          image: mariadb
+          env:
+            MYSQL_ROOT_PASSWORD: senha123
+
+      - name: "Executa o container Owncloud"
+        docker_container:
+          name: owncloudn
+          image: owncloud
+          links:
+            - "banco:owncloud"
+
+          ports:
+            - "80:80"
+
